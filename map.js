@@ -2,6 +2,7 @@ import mapboxgl from 'https://cdn.jsdelivr.net/npm/mapbox-gl@2.15.0/+esm';
 import * as d3 from 'https://cdn.jsdelivr.net/npm/d3@7.9.0/+esm';
 
 mapboxgl.accessToken = 'pk.eyJ1IjoiZXRoYW5qbCIsImEiOiJjbXdmZno0YWIwMHV3MnlwbHR3bHh5bm1xIn0.c_tUcQYvVgJfElnaCoC9Xw';
+let stationFlow = d3.scaleQuantize().domain([0, 1]).range([0, 0.5, 1]);
 
 const map = new mapboxgl.Map({
     container: 'map',
@@ -131,6 +132,7 @@ map.on('load', async ()=> {
         .enter()
         .append('circle')
         .attr('r', (d) => radiusScale(d.totalTraffic))
+        .style('--departure-ratio', (d) => stationFlow(d.departures / d.totalTraffic))
         .each(function (d) {
             d3.select(this).append('title').text(tooltipText(d));
         });
@@ -156,6 +158,7 @@ map.on('load', async ()=> {
             .data(filteredStations, (d) => d.short_name)
             .join('circle')
             .attr('r', (d) => radiusScale(d.totalTraffic))
+            .style('--departure-ratio', (d) => stationFlow(d.departures / d.totalTraffic))
             .select('title')
             .text(tooltipText);
     }
